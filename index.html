@@ -21,6 +21,12 @@
         <input type="text" id="genEmail" placeholder="example@example.com (optional)">
         <label>Password (optional):</label>
         <input type="password" id="genPassphrase" placeholder="Enter password (optional)">
+        <label>Key size:</label>
+        <select id="genRsaBits">
+            <option value="2048" selected>2048-bit (default)</option>
+            <option value="3072">3072-bit</option>
+            <option value="4096">4096-bit</option>
+        </select>
         
         <button id="btnGenerate" onclick="generateKeys()">Generate keys</button>
         <div id="genError" class="error"></div>

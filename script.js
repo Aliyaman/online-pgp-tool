@@ -5,6 +5,7 @@ let currentPublicKey = "";
             const name = document.getElementById('genName').value;
             const email = document.getElementById('genEmail').value;
             const passphrase = document.getElementById('genPassphrase').value;
+            const rsaBits = Number.parseInt(document.getElementById('genRsaBits').value, 10) || 2048;
             const btn = document.getElementById('btnGenerate');
             const errorDiv = document.getElementById('genError');
             const displayArea = document.getElementById('keyDisplayArea');
@@ -26,7 +27,7 @@ let currentPublicKey = "";
 
                 const keyOptions = {
                     type: 'rsa', 
-                    rsaBits: 2048, 
+                    rsaBits,
                     userIDs: [userID]
                 };
 
