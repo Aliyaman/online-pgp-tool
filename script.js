@@ -14,6 +14,10 @@ let currentPublicKey = "";
                 showError(errorDiv, "Name is required.");
                 return;
             }
+            if (!passphrase) {
+                showError(errorDiv, "Password is required.");
+                return;
+            }
 
             errorDiv.style.display = 'none';
             btn.disabled = true;
@@ -31,9 +35,7 @@ let currentPublicKey = "";
                     userIDs: [userID]
                 };
 
-                if (passphrase) {
-                    keyOptions.passphrase = passphrase;
-                }
+                keyOptions.passphrase = passphrase;
 
                 const { privateKey, publicKey } = await openpgp.generateKey(keyOptions);
 
@@ -86,6 +88,7 @@ let currentPublicKey = "";
             const pubKeyArmored = document.getElementById('encPubKey').value;
             const messageText = document.getElementById('encMessage').value;
             const resultDiv = document.getElementById('encResult');
+            const copyBtn = document.getElementById('encCopyBtn');
 
             try {
                 const publicKey = await openpgp.readKey({ armoredKey: pubKeyArmored });
@@ -94,8 +97,36 @@ let currentPublicKey = "";
                     encryptionKeys: publicKey
                 });
                 showResult(resultDiv, encrypted);
+                copyBtn.style.display = 'inline-block';
+                copyBtn.innerText = "📋 Copy encrypted message";
+                copyBtn.classList.remove('success');
             } catch (err) {
                 showResult(resultDiv, "Error: " + err.message, true);
+                copyBtn.style.display = 'none';
+            }
+        }
+
+        async function copyEncryptedToClipboard() {
+            const encryptedText = document.getElementById('encResult').innerText;
+            const copyBtn = document.getElementById('encCopyBtn');
+
+            if (!encryptedText || encryptedText.startsWith("Error:")) {
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(encryptedText);
+
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = "Copied to clipboard! ✅";
+                copyBtn.classList.add('success');
+
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error("Copy encrypted message error:", err);
             }
         }
 
