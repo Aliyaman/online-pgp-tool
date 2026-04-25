@@ -9,8 +9,8 @@ let currentPublicKey = "";
             const errorDiv = document.getElementById('genError');
             const displayArea = document.getElementById('keyDisplayArea');
 
-            if (!name || !email || !passphrase) {
-                showError(errorDiv, "Missing info.");
+            if (!name) {
+                showError(errorDiv, "Name is required.");
                 return;
             }
 
@@ -19,12 +19,22 @@ let currentPublicKey = "";
             btn.innerText = "Generating...";
 
             try {
-                const { privateKey, publicKey } = await openpgp.generateKey({
+                const userID = { name };
+                if (email) {
+                    userID.email = email;
+                }
+
+                const keyOptions = {
                     type: 'rsa', 
                     rsaBits: 2048, 
-                    userIDs: [{ name, email }],
-                    passphrase
-                });
+                    userIDs: [userID]
+                };
+
+                if (passphrase) {
+                    keyOptions.passphrase = passphrase;
+                }
+
+                const { privateKey, publicKey } = await openpgp.generateKey(keyOptions);
 
                 currentPublicKey = publicKey;
                 currentPrivateKey = privateKey;
