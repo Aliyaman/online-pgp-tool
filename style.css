@@ -1,0 +1,64 @@
+body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #2c3e50; }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card h2 { margin-top: 0; color: #34495e; font-size: 1.2em; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; }
+        input[type="text"], input[type="password"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        select { font-family: 'Segoe UI', sans-serif; cursor: pointer; background: #fff; }
+        textarea { resize: vertical; min-height: 120px; }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        button:hover { background-color: #2980b9; }
+        button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        
+        .btn-copy { background-color: #2ecc71; margin-top: 8px; font-weight: bold; }
+        .btn-copy:hover { background-color: #27ae60; }
+        .btn-copy.success { background-color: #27ae60; }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e8f8f5;
+            border-left: 4px solid #1abc9c;
+            display: none;
+            word-break: break-all;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.85em;
+            border-radius: 0 6px 6px 0;
+        }
+        .error { background-color: #fdedec; border-left: 4px solid #e74c3c; color: #c0392b; display: none; margin-top:15px; padding:10px; border-radius: 0 6px 6px 0;}
+        
+        #keyDisplayArea { display: none; margin-top: 20px; padding: 15px; background: #fdfefe; border: 1px solid #d5dbdb; border-radius: 8px; }
+        #generatedKeyBox { min-height: 200px; background-color: #f8f9f9; font-size: 0.8em; }
