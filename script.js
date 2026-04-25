@@ -28,6 +28,7 @@ let currentPublicKey = "";
 
                 currentPublicKey = publicKey;
                 currentPrivateKey = privateKey;
+                document.getElementById('decPrivKey').value = privateKey;
 
                 displayArea.style.display = 'block';
                 document.getElementById('keySelector').value = 'public';
