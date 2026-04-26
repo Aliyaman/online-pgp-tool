@@ -130,6 +130,19 @@ let currentPublicKey = "";
             }
         }
 
+        function togglePasswordVisibility(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            const button = document.getElementById(buttonId);
+
+            if (!input || !button) {
+                return;
+            }
+
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            button.innerText = isHidden ? 'Hide' : 'Show';
+        }
+
         async function decryptMsg() {
             const privKeyArmored = document.getElementById('decPrivKey').value;
             const passphrase = document.getElementById('decPassphrase').value;

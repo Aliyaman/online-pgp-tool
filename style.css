@@ -45,6 +45,23 @@ body {
         .btn-copy { background-color: #2ecc71; margin-top: 8px; font-weight: bold; }
         .btn-copy:hover { background-color: #27ae60; }
         .btn-copy.success { background-color: #27ae60; }
+        .pass-input-row { position: relative; margin-top: 5px; }
+        .pass-input-row input { margin-top: 0; padding-right: 70px; }
+        .btn-toggle {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            width: auto !important;
+            margin-top: 0;
+            padding: 4px 8px;
+            font-size: 0.72em;
+            border-radius: 5px;
+            background-color: #7f8c8d;
+            line-height: 1;
+            z-index: 2;
+        }
+        .btn-toggle:hover { background-color: #6c7a7b; }
 
         .result {
             margin-top: 15px;

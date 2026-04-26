@@ -20,7 +20,10 @@
         <label>E-mail (optional):</label>
         <input type="text" id="genEmail" placeholder="example@example.com (optional)">
         <label>Password:</label>
-        <input type="password" id="genPassphrase" placeholder="Enter password">
+        <div class="pass-input-row">
+            <input type="password" id="genPassphrase" placeholder="Enter password">
+            <button id="toggleGenPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('genPassphrase', 'toggleGenPassBtn')">Show</button>
+        </div>
         <label>Key size:</label>
         <select id="genRsaBits">
             <option value="2048" selected>2048-bit (default)</option>
@@ -58,7 +61,10 @@
         <label>Recipients private key:</label>
         <textarea id="decPrivKey" placeholder="-----BEGIN PGP PRIVATE KEY BLOCK-----"></textarea>
         <label>Password:</label>
-        <input type="password" id="decPassphrase">
+        <div class="pass-input-row">
+            <input type="password" id="decPassphrase">
+            <button id="toggleDecPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('decPassphrase', 'toggleDecPassBtn')">Show</button>
+        </div>
         <label>Encrypted Message:</label>
         <textarea id="decMessage"></textarea>
         <button onclick="decryptMsg()">Decrypt Message</button>
