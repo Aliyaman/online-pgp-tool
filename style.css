@@ -1,31 +1,73 @@
-body {
+:root {
+            color-scheme: light;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --heading-color: #2c3e50;
+            --muted-color: #7f8c8d;
+            --card-bg: #ffffff;
+            --card-heading-color: #34495e;
+            --card-border: #ecf0f1;
+            --input-bg: #ffffff;
+            --input-border: #ccc;
+            --input-text: #333;
+            --key-area-bg: #fdfefe;
+            --key-area-border: #d5dbdb;
+            --key-box-bg: #f8f9f9;
+        }
+
+        body.dark-mode {
+            color-scheme: dark;
+            --bg-color: #0f141a;
+            --text-color: #d6dde5;
+            --heading-color: #e6edf5;
+            --muted-color: #98a6b4;
+            --card-bg: #1b2430;
+            --card-heading-color: #dce6f2;
+            --card-border: #2b3a4c;
+            --input-bg: #101923;
+            --input-border: #33465c;
+            --input-text: #d6dde5;
+            --key-area-bg: #13202d;
+            --key-area-border: #2f4258;
+            --key-box-bg: #0f1a25;
+        }
+
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
-        h1 { text-align: center; color: #2c3e50; }
+        h1 { text-align: center; color: var(--heading-color); }
+        .subtitle { text-align: center; font-size: 0.9em; color: var(--muted-color); }
+        .top-controls { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .theme-toggle { width: auto; margin-top: 0; padding: 8px 12px; background: #8e44ad; }
+        .theme-toggle:hover { background: #7d3c98; }
         .card {
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease;
         }
-        .card h2 { margin-top: 0; color: #34495e; font-size: 1.2em; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .card h2 { margin-top: 0; color: var(--card-heading-color); font-size: 1.2em; border-bottom: 2px solid var(--card-border); padding-bottom: 10px; }
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; }
         input[type="text"], input[type="password"], textarea, select {
             width: 100%;
             padding: 12px;
             margin-top: 5px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
             border-radius: 6px;
             box-sizing: border-box;
             font-family: monospace;
+            background-color: var(--input-bg);
+            color: var(--input-text);
         }
-        select { font-family: 'Segoe UI', sans-serif; cursor: pointer; background: #fff; }
+        select { font-family: 'Segoe UI', sans-serif; cursor: pointer; }
         textarea { resize: vertical; min-height: 120px; }
         button {
             background-color: #3498db;
@@ -77,5 +119,5 @@ body {
         }
         .error { background-color: #fdedec; border-left: 4px solid #e74c3c; color: #c0392b; display: none; margin-top:15px; padding:10px; border-radius: 0 6px 6px 0;}
         
-        #keyDisplayArea { display: none; margin-top: 20px; padding: 15px; background: #fdfefe; border: 1px solid #d5dbdb; border-radius: 8px; }
-        #generatedKeyBox { min-height: 200px; background-color: #f8f9f9; font-size: 0.8em; }
+        #keyDisplayArea { display: none; margin-top: 20px; padding: 15px; background: var(--key-area-bg); border: 1px solid var(--key-area-border); border-radius: 8px; }
+        #generatedKeyBox { min-height: 200px; background-color: var(--key-box-bg); font-size: 0.8em; }
