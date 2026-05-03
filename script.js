@@ -1,5 +1,83 @@
 let currentPublicKey = "";
         let currentPrivateKey = "";
+        let sensitiveDataTimer = null;
+
+        function clearInputValue(id) {
+            const el = document.getElementById(id);
+            if (el && typeof el.value === 'string') {
+                el.value = '';
+            }
+        }
+
+        function clearResultPanel(id) {
+            const el = document.getElementById(id);
+            if (!el) {
+                return;
+            }
+            el.innerText = '';
+            el.style.display = 'none';
+            el.style.borderColor = '';
+            el.style.backgroundColor = '';
+        }
+
+        function clearSensitiveInputs() {
+            clearInputValue('genName');
+            clearInputValue('genEmail');
+            clearInputValue('genPassphrase');
+            clearInputValue('encPubKey');
+            clearInputValue('encMessage');
+            clearInputValue('decPassphrase');
+            clearInputValue('decPrivKey');
+            clearInputValue('decMessage');
+            clearResultPanel('encResult');
+            clearResultPanel('decResult');
+            const encCopyBtn = document.getElementById('encCopyBtn');
+            if (encCopyBtn) {
+                encCopyBtn.style.display = 'none';
+                encCopyBtn.innerText = '📋 Copy encrypted message';
+                encCopyBtn.classList.remove('success');
+            }
+        }
+
+        function clearGeneratedKeysFromMemory() {
+            currentPublicKey = "";
+            currentPrivateKey = "";
+            const selector = document.getElementById('keySelector');
+            const generatedKeyBox = document.getElementById('generatedKeyBox');
+            if (generatedKeyBox) {
+                generatedKeyBox.value = '';
+            }
+            if (selector) {
+                selector.value = 'public';
+            }
+        }
+
+        function scheduleSensitiveDataCleanup() {
+            if (sensitiveDataTimer) {
+                clearTimeout(sensitiveDataTimer);
+            }
+            sensitiveDataTimer = setTimeout(() => {
+                clearSensitiveInputs();
+                clearGeneratedKeysFromMemory();
+            }, 10 * 60 * 1000);
+        }
+
+        function clearSensitiveDataNow(buttonId = null) {
+            clearSensitiveInputs();
+            clearGeneratedKeysFromMemory();
+            if (buttonId) {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    const originalText = button.innerText;
+                    button.innerText = 'Cleared! ✅';
+                    button.classList.add('success');
+                    setTimeout(() => {
+                        button.innerText = originalText;
+                        button.classList.remove('success');
+                    }, 1500);
+                }
+            }
+        }
 
         function applyTheme(theme) {
             const isDark = theme === 'dark';
@@ -72,10 +150,12 @@ let currentPublicKey = "";
                 displayArea.style.display = 'block';
                 document.getElementById('keySelector').value = 'public';
                 switchKeyView();
+                scheduleSensitiveDataCleanup();
 
             } catch (err) {
                 showError(errorDiv, "Error: " + err.message);
             } finally {
+                clearInputValue('genPassphrase');
                 btn.disabled = false;
                 btn.innerText = "Generate Keys";
             }
@@ -183,8 +263,11 @@ let currentPublicKey = "";
                 const message = await openpgp.readMessage({ armoredMessage: encryptedMessage });
                 const { data: decrypted } = await openpgp.decrypt({ message, decryptionKeys: privateKey });
                 showResult(resultDiv, "Decrypted Message:\n\n" + decrypted);
+                scheduleSensitiveDataCleanup();
             } catch (err) {
                 showResult(resultDiv, "Decryption error!: " + err.message, true);
+            } finally {
+                clearInputValue('decPassphrase');
             }
         }
 
@@ -199,3 +282,8 @@ let currentPublicKey = "";
             element.innerText = text;
             element.style.display = 'block';
         }
+
+        window.addEventListener('pagehide', () => {
+            clearSensitiveInputs();
+            clearGeneratedKeysFromMemory();
+        });

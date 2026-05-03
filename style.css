@@ -43,9 +43,12 @@
         }
         h1 { text-align: center; color: var(--heading-color); }
         .subtitle { text-align: center; font-size: 0.9em; color: var(--muted-color); }
-        .top-controls { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .top-controls { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
         .theme-toggle { width: auto; margin-top: 0; padding: 8px 12px; background: #8e44ad; }
         .theme-toggle:hover { background: #7d3c98; }
+        .btn-danger { width: auto; margin-top: 0; padding: 8px 12px; background: #c0392b; font-size: 0.9em; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-danger.success { background: #27ae60; }
         .card {
             background: var(--card-bg);
             padding: 20px;
