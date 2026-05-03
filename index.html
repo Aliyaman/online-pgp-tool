@@ -17,6 +17,13 @@
     <h1>🔒 Online PGP Tool</h1>
     <p class="subtitle">Your data stays on your device.</p>
 
+    <nav class="main-tabs" role="tablist" aria-label="Tool sections">
+        <button type="button" class="tab-btn" role="tab" id="tab-enc-dec" aria-selected="true" aria-controls="panel-enc-dec" onclick="switchMainTab('enc-dec')">Encrypt / Decrypt</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-sign-verify" aria-selected="false" aria-controls="panel-sign-verify" onclick="switchMainTab('sign-verify')">Sign / Verify</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-symmetric" aria-selected="false" aria-controls="panel-symmetric" onclick="switchMainTab('symmetric')">Encrypt with password</button>
+    </nav>
+
+    <section id="panel-enc-dec" role="tabpanel" class="tab-panel is-active" aria-labelledby="tab-enc-dec">
     <div class="card">
         <h2>1. Generate key pair</h2>
         <label>Name:</label>
@@ -74,5 +81,65 @@
         <button onclick="decryptMsg()">Decrypt Message</button>
         <div id="decResult" class="result"></div>
     </div>
+    </section>
+
+    <section id="panel-sign-verify" role="tabpanel" class="tab-panel" aria-labelledby="tab-sign-verify" hidden>
+    <div class="card">
+        <h2>Sign message</h2>
+        <p class="hint">Produces a clearsigned PGP message (readable text plus signature).</p>
+        <label>Your private key:</label>
+        <textarea id="signPrivKey" placeholder="-----BEGIN PGP PRIVATE KEY BLOCK-----"></textarea>
+        <label>Key passphrase:</label>
+        <div class="pass-input-row">
+            <input type="password" id="signPassphrase" placeholder="Passphrase">
+            <button id="toggleSignPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('signPassphrase', 'toggleSignPassBtn')">Show</button>
+        </div>
+        <label>Message to sign:</label>
+        <textarea id="signPlainText" placeholder="Message to sign..."></textarea>
+        <button type="button" onclick="signMessage()">Sign</button>
+        <div id="signResult" class="result"></div>
+        <button id="signCopyBtn" type="button" class="btn-copy" onclick="copySignOutputToClipboard()" style="display: none;">📋 Copy signed message</button>
+    </div>
+    <div class="card">
+        <h2>Verify signature</h2>
+        <p class="hint">Paste a clearsigned message and the signer&apos;s public key.</p>
+        <label>Signer&apos;s public key:</label>
+        <textarea id="verifyPubKey" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----"></textarea>
+        <label>Signed message:</label>
+        <textarea id="verifySignedCleartext" placeholder="-----BEGIN PGP SIGNED MESSAGE-----"></textarea>
+        <button type="button" onclick="verifySignedMessage()">Verify</button>
+        <div id="verifyResult" class="result"></div>
+    </div>
+    </section>
+
+    <section id="panel-symmetric" role="tabpanel" class="tab-panel" aria-labelledby="tab-symmetric" hidden>
+    <div class="card">
+        <h2>Encrypt with passphrase</h2>
+        <p class="hint">Symmetric encryption (same password encrypts and decrypts). Uses PGP-compatible symmetric encryption.</p>
+        <label>Passphrase:</label>
+        <div class="pass-input-row">
+            <input type="password" id="symEncPass" placeholder="Choose a strong passphrase">
+            <button id="toggleSymEncPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('symEncPass', 'toggleSymEncPassBtn')">Show</button>
+        </div>
+        <label>Message:</label>
+        <textarea id="symPlain" placeholder="Secret message..."></textarea>
+        <button type="button" onclick="symmetricEncryptMsg()">Encrypt</button>
+        <div id="symEncResult" class="result"></div>
+        <button id="symEncCopyBtn" type="button" class="btn-copy" onclick="copySymEncToClipboard()" style="display: none;">📋 Copy ciphertext</button>
+    </div>
+    <div class="card">
+        <h2>Decrypt with passphrase</h2>
+        <label>Passphrase:</label>
+        <div class="pass-input-row">
+            <input type="password" id="symDecPass" placeholder="Same passphrase">
+            <button id="toggleSymDecPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('symDecPass', 'toggleSymDecPassBtn')">Show</button>
+        </div>
+        <label>Encrypted message:</label>
+        <textarea id="symCipher" placeholder="-----BEGIN PGP MESSAGE-----"></textarea>
+        <button type="button" onclick="symmetricDecryptMsg()">Decrypt</button>
+        <div id="symDecResult" class="result"></div>
+        <button id="symDecCopyBtn" type="button" class="btn-copy" onclick="copySymDecToClipboard()" style="display: none;">📋 Copy decrypted text</button>
+    </div>
+    </section>
 </body>
 </html>

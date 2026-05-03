@@ -29,14 +29,40 @@ let currentPublicKey = "";
             clearInputValue('decPassphrase');
             clearInputValue('decPrivKey');
             clearInputValue('decMessage');
+            clearInputValue('signPrivKey');
+            clearInputValue('signPassphrase');
+            clearInputValue('signPlainText');
+            clearInputValue('verifyPubKey');
+            clearInputValue('verifySignedCleartext');
+            clearInputValue('symEncPass');
+            clearInputValue('symPlain');
+            clearInputValue('symCipher');
+            clearInputValue('symDecPass');
+            const genErr = document.getElementById('genError');
+            if (genErr) {
+                genErr.innerText = '';
+                genErr.style.display = 'none';
+            }
             clearResultPanel('encResult');
             clearResultPanel('decResult');
-            const encCopyBtn = document.getElementById('encCopyBtn');
-            if (encCopyBtn) {
-                encCopyBtn.style.display = 'none';
-                encCopyBtn.innerText = '📋 Copy encrypted message';
-                encCopyBtn.classList.remove('success');
+            clearResultPanel('signResult');
+            clearResultPanel('verifyResult');
+            clearResultPanel('symEncResult');
+            clearResultPanel('symDecResult');
+            resetCopyOutcomeButton('encCopyBtn', '📋 Copy encrypted message');
+            resetCopyOutcomeButton('signCopyBtn', '📋 Copy signed message');
+            resetCopyOutcomeButton('symEncCopyBtn', '📋 Copy ciphertext');
+            resetCopyOutcomeButton('symDecCopyBtn', '📋 Copy decrypted text');
+        }
+
+        function resetCopyOutcomeButton(id, defaultLabel) {
+            const btn = document.getElementById(id);
+            if (!btn) {
+                return;
             }
+            btn.style.display = 'none';
+            btn.innerText = defaultLabel;
+            btn.classList.remove('success');
         }
 
         function clearGeneratedKeysFromMemory() {
@@ -104,6 +130,31 @@ let currentPublicKey = "";
         }
 
         window.addEventListener('DOMContentLoaded', initializeTheme);
+
+        const MAIN_TAB_IDS = ['enc-dec', 'sign-verify', 'symmetric'];
+        const MAIN_TAB_PANEL_MAP = {
+            'enc-dec': 'panel-enc-dec',
+            'sign-verify': 'panel-sign-verify',
+            'symmetric': 'panel-symmetric'
+        };
+
+        function switchMainTab(tabId) {
+            if (!MAIN_TAB_IDS.includes(tabId)) {
+                return;
+            }
+            MAIN_TAB_IDS.forEach((tid) => {
+                const panel = document.getElementById(MAIN_TAB_PANEL_MAP[tid]);
+                const btn = document.getElementById('tab-' + tid);
+                const active = tid === tabId;
+                if (panel) {
+                    panel.classList.toggle('is-active', active);
+                    panel.toggleAttribute('hidden', !active);
+                }
+                if (btn) {
+                    btn.setAttribute('aria-selected', String(active));
+                }
+            });
+        }
 
         async function generateKeys() {
             const name = document.getElementById('genName').value;
@@ -236,6 +287,67 @@ let currentPublicKey = "";
             }
         }
 
+        async function copySignOutputToClipboard() {
+            const text = document.getElementById('signResult').innerText;
+            const copyBtn = document.getElementById('signCopyBtn');
+            if (!text || text.startsWith('Error:')) {
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = 'Copied to clipboard! ✅';
+                copyBtn.classList.add('success');
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error('Copy signed message error:', err);
+            }
+        }
+
+        async function copySymEncToClipboard() {
+            const text = document.getElementById('symEncResult').innerText;
+            const copyBtn = document.getElementById('symEncCopyBtn');
+            if (!text || text.startsWith('Error:')) {
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = 'Copied to clipboard! ✅';
+                copyBtn.classList.add('success');
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error('Copy symmetric ciphertext error:', err);
+            }
+        }
+
+        async function copySymDecToClipboard() {
+            const raw = document.getElementById('symDecResult').innerText;
+            const copyBtn = document.getElementById('symDecCopyBtn');
+            if (!raw || raw.startsWith('Error:')) {
+                return;
+            }
+            const text = raw.replace(/^Decrypted message:\s*\n+/i, '').trimStart();
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = 'Copied to clipboard! ✅';
+                copyBtn.classList.add('success');
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error('Copy decrypted symmetric error:', err);
+            }
+        }
+
         function togglePasswordVisibility(inputId, buttonId) {
             const input = document.getElementById(inputId);
             const button = document.getElementById(buttonId);
@@ -268,6 +380,119 @@ let currentPublicKey = "";
                 showResult(resultDiv, "Decryption error!: " + err.message, true);
             } finally {
                 clearInputValue('decPassphrase');
+            }
+        }
+
+        async function signMessage() {
+            const armoredPriv = document.getElementById('signPrivKey').value;
+            const passphrase = document.getElementById('signPassphrase').value;
+            const plain = document.getElementById('signPlainText').value;
+            const resultDiv = document.getElementById('signResult');
+            const copyBtn = document.getElementById('signCopyBtn');
+
+            try {
+                const privateKey = await openpgp.decryptKey({
+                    privateKey: await openpgp.readPrivateKey({ armoredKey: armoredPriv }),
+                    passphrase
+                });
+                const cleartext = await openpgp.createCleartextMessage({ text: plain });
+                const signedArmored = await openpgp.sign({
+                    message: cleartext,
+                    signingKeys: privateKey,
+                    format: 'armored'
+                });
+                showResult(resultDiv, signedArmored);
+                copyBtn.style.display = 'inline-block';
+                copyBtn.innerText = '📋 Copy signed message';
+                copyBtn.classList.remove('success');
+                scheduleSensitiveDataCleanup();
+            } catch (err) {
+                showResult(resultDiv, 'Error: ' + err.message, true);
+                copyBtn.style.display = 'none';
+            } finally {
+                clearInputValue('signPassphrase');
+            }
+        }
+
+        async function verifySignedMessage() {
+            const pubArmor = document.getElementById('verifyPubKey').value;
+            const signedArmor = document.getElementById('verifySignedCleartext').value;
+            const resultDiv = document.getElementById('verifyResult');
+
+            try {
+                const publicKey = await openpgp.readKey({ armoredKey: pubArmor });
+                const message = await openpgp.readCleartextMessage({ cleartextMessage: signedArmor });
+                const verified = await openpgp.verify({
+                    message,
+                    verificationKeys: publicKey
+                });
+                if (!verified.signatures.length) {
+                    throw new Error('No signatures found in message.');
+                }
+                await Promise.all(verified.signatures.map((sig) => sig.verified));
+                showResult(resultDiv, 'Signature valid ✓\n\nMessage:\n\n' + verified.data);
+            } catch (err) {
+                showResult(resultDiv, 'Verification failed: ' + err.message, true);
+            }
+        }
+
+        async function symmetricEncryptMsg() {
+            const pass = document.getElementById('symEncPass').value;
+            const text = document.getElementById('symPlain').value;
+            const resultDiv = document.getElementById('symEncResult');
+            const copyBtn = document.getElementById('symEncCopyBtn');
+
+            if (!pass) {
+                showResult(resultDiv, 'Error: passphrase is required.', true);
+                copyBtn.style.display = 'none';
+                return;
+            }
+
+            try {
+                const encrypted = await openpgp.encrypt({
+                    message: await openpgp.createMessage({ text }),
+                    passwords: [pass],
+                    format: 'armored'
+                });
+                showResult(resultDiv, encrypted);
+                copyBtn.style.display = 'inline-block';
+                copyBtn.innerText = '📋 Copy ciphertext';
+                copyBtn.classList.remove('success');
+                scheduleSensitiveDataCleanup();
+            } catch (err) {
+                showResult(resultDiv, 'Error: ' + err.message, true);
+                copyBtn.style.display = 'none';
+            }
+        }
+
+        async function symmetricDecryptMsg() {
+            const pass = document.getElementById('symDecPass').value;
+            const armor = document.getElementById('symCipher').value;
+            const resultDiv = document.getElementById('symDecResult');
+            const copyBtn = document.getElementById('symDecCopyBtn');
+
+            if (!pass) {
+                showResult(resultDiv, 'Error: passphrase is required.', true);
+                copyBtn.style.display = 'none';
+                return;
+            }
+
+            try {
+                const message = await openpgp.readMessage({ armoredMessage: armor });
+                const { data: decrypted } = await openpgp.decrypt({
+                    message,
+                    passwords: [pass]
+                });
+                showResult(resultDiv, 'Decrypted message:\n\n' + decrypted);
+                copyBtn.style.display = 'inline-block';
+                copyBtn.innerText = '📋 Copy decrypted text';
+                copyBtn.classList.remove('success');
+                scheduleSensitiveDataCleanup();
+            } catch (err) {
+                showResult(resultDiv, 'Decryption error: ' + err.message, true);
+                copyBtn.style.display = 'none';
+            } finally {
+                clearInputValue('symDecPass');
             }
         }
 

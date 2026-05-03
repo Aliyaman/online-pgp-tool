@@ -43,6 +43,47 @@
         }
         h1 { text-align: center; color: var(--heading-color); }
         .subtitle { text-align: center; font-size: 0.9em; color: var(--muted-color); }
+        .hint { margin: -4px 0 12px; font-size: 0.85em; color: var(--muted-color); font-weight: normal; line-height: 1.4; }
+
+        .main-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 6px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 0;
+        }
+        .main-tabs .tab-btn {
+            flex: 1 1 auto;
+            min-width: min(140px, 100%);
+            width: auto;
+            margin-top: 0;
+            padding: 10px 12px;
+            font-size: 0.92em;
+            background: transparent;
+            color: var(--muted-color);
+            border-radius: 8px 8px 0 0;
+            border: 2px solid transparent;
+            border-bottom: none;
+            box-shadow: none;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .main-tabs .tab-btn:hover {
+            background: var(--card-border);
+            color: var(--heading-color);
+        }
+        .main-tabs .tab-btn[aria-selected="true"] {
+            background: var(--card-bg);
+            color: var(--heading-color);
+            border-color: var(--card-border);
+            border-bottom: 2px solid var(--card-bg);
+            margin-bottom: -2px;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        }
+        body.dark-mode .main-tabs .tab-btn[aria-selected="true"] {
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
+        }
+        .tab-panel { margin-bottom: 0; }
         .top-controls { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
         .theme-toggle { width: auto; margin-top: 0; padding: 8px 12px; background: #8e44ad; }
         .theme-toggle:hover { background: #7d3c98; }
@@ -119,6 +160,9 @@
             font-family: monospace;
             font-size: 0.85em;
             border-radius: 0 6px 6px 0;
+        }
+        body.dark-mode .result {
+            color: #000;
         }
         .error { background-color: #fdedec; border-left: 4px solid #e74c3c; color: #c0392b; display: none; margin-top:15px; padding:10px; border-radius: 0 6px 6px 0;}
         
