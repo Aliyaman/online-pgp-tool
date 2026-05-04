@@ -685,17 +685,69 @@ async function copyKeyToClipboard() {
     }
 }
 
+function toggleMultipleKeys() {
+    const isChecked = document.getElementById('multipleKeysCheckbox').checked;
+    const extraContainer = document.getElementById('extraKeysContainer');
+    if (extraContainer) {
+        extraContainer.hidden = !isChecked;
+    }
+}
+
+function addPublicKeyInput() {
+    const extraContainer = document.getElementById('extraKeysContainer');
+    const row = document.createElement('div');
+    row.className = 'pub-key-row';
+    row.style.display = 'flex';
+    row.style.alignItems = 'stretch';
+    row.style.gap = '10px';
+    row.style.marginBottom = '10px';
+    
+    const textarea = document.createElement('textarea');
+    textarea.className = 'enc-pub-key extra-pub-key';
+    textarea.placeholder = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
+    textarea.style.flex = '1';
+    textarea.style.margin = '0';
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn-remove-key btn-danger';
+    removeBtn.innerText = '-';
+    removeBtn.style.width = '40px';
+    removeBtn.style.margin = '0';
+    removeBtn.style.fontSize = '20px';
+    removeBtn.style.fontWeight = 'bold';
+    removeBtn.onclick = function() {
+        row.remove();
+    };
+    
+    row.appendChild(textarea);
+    row.appendChild(removeBtn);
+    extraContainer.appendChild(row);
+}
+
 async function encryptMsg() {
-    const pubKeyArmored = document.getElementById('encPubKey').value;
+    const pubKeyInputs = document.querySelectorAll('.enc-pub-key');
     const messageText = document.getElementById('encMessage').value;
     const resultDiv = document.getElementById('encResult');
     const copyBtn = document.getElementById('encCopyBtn');
 
     try {
-        const publicKey = await openpgp.readKey({ armoredKey: pubKeyArmored });
+        let publicKeys = [];
+        for (let input of pubKeyInputs) {
+            const armoredKey = input.value.trim();
+            if (armoredKey) {
+                const publicKey = await openpgp.readKey({ armoredKey: armoredKey });
+                publicKeys.push(publicKey);
+            }
+        }
+
+        if (publicKeys.length === 0) {
+            throw new Error("Please provide at least one public key.");
+        }
+
         const encrypted = await openpgp.encrypt({
             message: await openpgp.createMessage({ text: messageText }),
-            encryptionKeys: publicKey
+            encryptionKeys: publicKeys
         });
         showResult(resultDiv, encrypted);
         copyBtn.style.display = 'inline-block';

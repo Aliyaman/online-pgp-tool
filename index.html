@@ -117,8 +117,20 @@
 
         <div class="card">
             <h2>2. Encrypt Message</h2>
-            <label>Recipients public key:</label>
-            <textarea id="encPubKey" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----"></textarea>
+            <label>Recipients public key(s):</label>
+            <div id="encPubKeyContainer">
+                <textarea id="encPubKey" class="enc-pub-key" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----"></textarea>
+            </div>
+            <label class="checkbox-inline" style="margin-top: 10px; display: inline-flex;">
+                <input type="checkbox" id="multipleKeysCheckbox" onchange="toggleMultipleKeys()">
+                <span class="checkbox-inline-text">Encrypt to multiple public keys</span>
+            </label>
+            <div id="extraKeysContainer" hidden style="margin-top: 10px;">
+                <div class="pub-key-row" style="display: flex; align-items: stretch; gap: 10px; margin-bottom: 10px;">
+                    <textarea class="enc-pub-key extra-pub-key" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----" style="flex: 1; margin: 0;"></textarea>
+                    <button type="button" class="btn-add-key" onclick="addPublicKeyInput()" style="width: 40px; margin: 0; font-size: 20px; font-weight: bold; background-color: var(--primary); color: white;">+</button>
+                </div>
+            </div>
             <label>Your Message:</label>
             <textarea id="encMessage" placeholder="Secret message..."></textarea>
             <button onclick="encryptMsg()">Encrypt</button>
