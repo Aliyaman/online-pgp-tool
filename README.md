@@ -1,5 +1,7 @@
 # Online PGP Tool 🔒
 
+**Live Demo: [https://aliyaman.github.io/online-pgp-tool/](https://aliyaman.github.io/online-pgp-tool/)**
+
 A client-side, browser-based OpenPGP tool. This application allows you to securely generate keys, encrypt/decrypt messages, and manage your PGP identity directly in your web browser without sending sensitive data to a server.
 
 It is built using standard web technologies (HTML, CSS, JS) and relies on the official [OpenPGP.js](https://openpgpjs.org/) library. This project includes OpenPGP.js without any modifications, which is licensed under the GNU Lesser General Public License v3.0 (LGPL-3.0).
