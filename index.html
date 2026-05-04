@@ -25,27 +25,62 @@
     <nav class="main-tabs" role="tablist" aria-label="Tool sections">
         <button type="button" class="tab-btn" role="tab" id="tab-enc-dec" aria-selected="true" aria-controls="panel-enc-dec" onclick="switchMainTab('enc-dec')">Encrypt / Decrypt</button>
         <button type="button" class="tab-btn" role="tab" id="tab-sign-verify" aria-selected="false" aria-controls="panel-sign-verify" onclick="switchMainTab('sign-verify')">Sign / Verify</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-key-mgmt" aria-selected="false" aria-controls="panel-key-mgmt" onclick="switchMainTab('key-mgmt')">Key Management</button>
         <button type="button" class="tab-btn" role="tab" id="tab-symmetric" aria-selected="false" aria-controls="panel-symmetric" onclick="switchMainTab('symmetric')">Encrypt with password</button>
     </nav>
 
     <section id="panel-enc-dec" role="tabpanel" class="tab-panel is-active" aria-labelledby="tab-enc-dec">
     <div class="card">
         <h2>1. Generate key pair</h2>
+        <p class="hint">RSA keeps one multi-purpose key unless you split an encryption subkey. ECC uses Ed25519 for signing/certification plus a Curve25519 encryption subkey (OpenPGP.js convention).</p>
         <label>Name:</label>
         <input type="text" id="genName" placeholder="John Doe">
         <label>E-mail (optional):</label>
         <input type="text" id="genEmail" placeholder="example@example.com (optional)">
+        <label>Algorithm:</label>
+        <select id="genAlgorithm" onchange="toggleGenAlgorithmOptions()">
+            <option value="rsa">RSA</option>
+            <option value="ecc-ed25519">ECC (Ed25519 + Curve25519 encrypt subkey)</option>
+        </select>
+        <div id="rsaOptionsWrap">
+            <label>RSA modulus size:</label>
+            <select id="genRsaBits">
+                <option value="2048" selected>2048-bit</option>
+                <option value="3072">3072-bit</option>
+                <option value="4096">4096-bit</option>
+            </select>
+        </div>
+        <div id="rsaEncSubWrap" class="rsa-enc-sub-wrap">
+            <label class="checkbox-inline">
+                <input type="checkbox" id="genSeparateEncSubkey" onchange="toggleRsaEncSubopts()">
+                <span class="checkbox-inline-text">Add a dedicated RSA encryption subkey (recommended: primary used for certify/sign).</span>
+            </label>
+            <div id="rsaEncSubBitsWrap" hidden>
+                <label>Encryption subkey size:</label>
+                <select id="genEncSubRsaBits">
+                    <option value="2048" selected>2048-bit</option>
+                    <option value="3072">3072-bit</option>
+                    <option value="4096">4096-bit</option>
+                </select>
+            </div>
+        </div>
+        <label>Key expiration:</label>
+        <select id="genExpiryPreset" onchange="toggleGenExpiryCustom()">
+            <option value="" selected>No expiry</option>
+            <option value="2592000">30 days</option>
+            <option value="31881600">~1 year (366 days)</option>
+            <option value="63763200">~2 years (2×366)</option>
+            <option value="custom">Custom validity (minutes)…</option>
+        </select>
+        <div id="genExpiryCustomWrap" class="compact-field" hidden>
+            <label>Validity from creation (minutes):</label>
+            <input type="number" id="genExpiryMinutes" min="1" placeholder="525600 (~1 year)" value="">
+        </div>
         <label>Password:</label>
         <div class="pass-input-row">
             <input type="password" id="genPassphrase" placeholder="Enter password">
             <button id="toggleGenPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('genPassphrase', 'toggleGenPassBtn')">Show</button>
         </div>
-        <label>Key size:</label>
-        <select id="genRsaBits">
-            <option value="2048" selected>2048-bit (default)</option>
-            <option value="3072">3072-bit</option>
-            <option value="4096">4096-bit</option>
-        </select>
         
         <button id="btnGenerate" onclick="generateKeys()">Generate keys</button>
         <div id="genError" class="error"></div>
@@ -57,7 +92,8 @@
                 <option value="private">Private Key</option>
             </select>
             <textarea id="generatedKeyBox" readonly></textarea>
-            <button id="copyBtn" class="btn-copy" onclick="copyKeyToClipboard()">📋 Copy to clipboard</button>
+            <button id="copyBtn" type="button" class="btn-copy" onclick="copyKeyToClipboard()">📋 Copy to clipboard</button>
+            <p class="hint after-key-copy-hint">Revocation certificate, extra subkeys, and fingerprint checks are under the Key Management tab.</p>
         </div>
     </div>
 
@@ -85,6 +121,73 @@
         <textarea id="decMessage"></textarea>
         <button onclick="decryptMsg()">Decrypt Message</button>
         <div id="decResult" class="result"></div>
+    </div>
+    </section>
+
+    <section id="panel-key-mgmt" role="tabpanel" class="tab-panel" aria-labelledby="tab-key-mgmt" hidden>
+    <div class="card">
+        <h2>Inspect Key Details</h2>
+        <p class="hint">Paste a public or private key to view its user IDs, fingerprint, and other details.</p>
+        <label>Armored key</label>
+        <textarea id="inspectKeyArmored" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----"></textarea>
+        <button type="button" onclick="inspectKeyDetails()">Inspect Key</button>
+        <div id="inspectKeyResult" class="result mono-dense" style="white-space: pre-wrap; font-size: 0.9em; text-align: left;"></div>
+    </div>
+
+    <div class="card">
+        <h2>Verify Fingerprint</h2>
+        <p class="hint">Check someone else&apos;s armored block, independent of your session generated key pair.</p>
+        <label>Armored public key</label>
+        <textarea id="fpVerifyArmoredPub" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----"></textarea>
+        <label>Expected fingerprint</label>
+        <input type="text" id="fpVerifyExpected" class="mono-input" placeholder="e.g. A1B2 C3D4 …">
+        <button type="button" onclick="verifyFingerprintMatch()">Check fingerprint</button>
+        <div id="fpVerifyResult" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>Session Key Management</h2>
+        <p class="hint">Everything below applies to the key pair produced in Encrypt / Decrypt → Generate. It stays in-memory in this browser session until you clear it.</p>
+        <div id="keyMgmtEmptyState" class="key-mgmt-placeholder">
+            <p>No generated key loaded yet. Open <strong>Encrypt / Decrypt</strong>, fill in Generate key pair, then return here.</p>
+        </div>
+        <div id="keyMgmtContent" hidden>
+            <div id="keyMetaRow" class="key-meta-row">
+                <span class="key-meta-label">Primary fingerprint <span class="key-meta-context">(session public key)</span></span>
+                <code id="keyFingerprintDisplay" class="fingerprint-code"></code>
+                <span id="subkeySummary" class="subkey-summary"></span>
+                <button type="button" class="btn-muted-inline" onclick="copySessionFingerprintHex()">📋 Copy raw hex fingerprint</button>
+            </div>
+
+            <div id="revocationCertSection" class="revoke-cert-block" hidden>
+                <label>Revocation certificate</label>
+                <p class="hint">Store securely offline (separate backup). Publishing it permanently revokes the key pair you generated above.</p>
+                <textarea id="revocationCertBox" rows="8" readonly class="mono-dense"></textarea>
+                <div class="btn-row">
+                    <button type="button" class="btn-row-item btn-muted" onclick="copyRevocationCertificate()">📋 Copy cert</button>
+                    <button type="button" class="btn-row-item btn-muted" onclick="downloadRevocationCertificate()">⬇ Download .asc</button>
+                </div>
+            </div>
+
+            <div id="subkeyExtendSection" class="subkey-extend-block">
+                <h3 class="section-subtitle" style="margin-top:12px;border:none;padding-bottom:0;">Add subkey to this generated keypair</h3>
+                <p class="hint">Uses the encrypted private key from your current session generator output.</p>
+                <label>Unlock passphrase</label>
+                <div class="pass-input-row">
+                    <input type="password" id="addSubkeyPassphrase" placeholder="Private key passphrase">
+                    <button id="toggleAddSubPassBtn" class="btn-toggle" type="button" onclick="togglePasswordVisibility('addSubkeyPassphrase', 'toggleAddSubPassBtn')">Show</button>
+                </div>
+                <label>New subkey type</label>
+                <select id="addSubkeyKind">
+                    <option value="enc-rsa3072">Encrypt (RSA 3072)</option>
+                    <option value="enc-rsa4096">Encrypt (RSA 4096)</option>
+                    <option value="sig-rsa3072">Sign (RSA 3072)</option>
+                    <option value="enc-cv25519">Encrypt (ECC Curve25519)</option>
+                </select>
+                <button type="button" id="btnAddSubkey" onclick="attachSubkeyToCurrentKeypair()">Add subkey</button>
+                <div id="subkeyExtendError" class="error"></div>
+            </div>
+        </div>
     </div>
     </section>
 

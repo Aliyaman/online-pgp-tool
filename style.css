@@ -61,6 +61,110 @@
         .subtitle { text-align: center; font-size: 0.9em; color: var(--muted-color); }
         .hint { margin: -4px 0 12px; font-size: 0.85em; color: var(--muted-color); font-weight: normal; line-height: 1.4; }
 
+        .checkbox-inline {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-weight: normal;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+        .checkbox-inline input[type="checkbox"] {
+            width: auto;
+            margin-top: 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .checkbox-inline-text { line-height: 1.45; color: var(--text-color); }
+        .rsa-enc-sub-wrap { margin-top: 12px; }
+        .compact-field { margin-top: 12px; }
+        .compact-field label { margin-top: 8px; }
+        .compact-field input[type="number"] { font-family: monospace; }
+        .section-subtitle {
+            margin: 18px 0 8px;
+            font-size: 1em;
+            color: var(--card-heading-color);
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .key-meta-row {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: var(--key-area-bg);
+            border: 1px solid var(--key-area-border);
+            border-radius: 8px;
+        }
+        .key-meta-label {
+            display: block;
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted-color);
+            margin-bottom: 6px;
+        }
+        .fingerprint-code {
+            display: block;
+            font-family: monospace;
+            font-size: 0.86em;
+            word-break: break-all;
+            line-height: 1.55;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        .subkey-summary { font-size: 0.82em; color: var(--muted-color); }
+        .revoke-cert-block { margin-top: 16px; }
+        .subkey-extend-block {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--card-border);
+        }
+        .mono-dense { min-height: 120px; font-size: 0.78em; }
+        .mono-input { font-family: monospace !important; }
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .btn-row-item {
+            flex: 1 1 140px;
+            width: auto !important;
+            margin-top: 0 !important;
+            background-color: #6c7983 !important;
+        }
+        .btn-row-item:hover { background-color: #5d6a73 !important; }
+        body.dark-mode .btn-row-item {
+            background-color: #4a5968 !important;
+        }
+        body.dark-mode .btn-row-item:hover { background-color: #5b6e80 !important; }
+        .fingerprint-verify-block { margin-top: 22px; }
+        .mgmt-details {
+            margin-top: 14px;
+            padding: 10px 0 0;
+            border-top: 1px dashed var(--card-border);
+        }
+        .mgmt-details summary { cursor: pointer; font-weight: 600; color: var(--heading-color); }
+        .mgmt-details textarea { margin-top: 10px; }
+        .after-key-copy-hint { margin-top: 12px !important; margin-bottom: 0 !important; }
+        .key-mgmt-placeholder {
+            padding: 14px 16px;
+            background: var(--key-area-bg);
+            border: 1px dashed var(--key-area-border);
+            border-radius: 8px;
+            font-size: 0.92em;
+        }
+        .key-mgmt-placeholder p { margin: 0; line-height: 1.45; color: var(--text-color); }
+        .key-meta-context { font-weight: 400; color: var(--muted-color); }
+        .btn-muted-inline {
+            width: auto !important;
+            margin-top: 10px !important;
+            padding: 8px 12px !important;
+            font-size: 0.88em !important;
+            background-color: #7f8c8d !important;
+        }
+        .btn-muted-inline:hover { background-color: #707b7d !important; }
+
         .main-tabs {
             display: flex;
             flex-wrap: wrap;
