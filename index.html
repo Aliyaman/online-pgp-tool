@@ -90,11 +90,11 @@
                 <option value="2592000">30 days</option>
                 <option value="31881600">~1 year (366 days)</option>
                 <option value="63763200">~2 years (2×366)</option>
-                <option value="custom">Custom validity (minutes)…</option>
+                <option value="custom">Custom validity (days)…</option>
             </select>
             <div id="genExpiryCustomWrap" class="compact-field" hidden>
-                <label>Validity from creation (minutes):</label>
-                <input type="number" id="genExpiryMinutes" min="1" placeholder="525600 (~1 year)" value="">
+                <label>Validity from creation (days):</label>
+                <input type="number" id="genExpiryDays" min="1" placeholder="365 (~1 year)" value="">
             </div>
 
             <button id="btnGenerate" onclick="generateKeys()">Generate keys</button>

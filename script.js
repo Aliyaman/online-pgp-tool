@@ -19,11 +19,11 @@ let currentPublicKey = "";
                 return undefined;
             }
             if (preset === 'custom') {
-                const mins = Number.parseInt(document.getElementById('genExpiryMinutes').value, 10);
-                if (!Number.isFinite(mins) || mins <= 0) {
-                    throw new Error('Choose a positive number of minutes for custom expiry.');
+                const days = Number.parseInt(document.getElementById('genExpiryDays').value, 10);
+                if (!Number.isFinite(days) || days <= 0) {
+                    throw new Error('Choose a positive number of days for custom expiry.');
                 }
-                return mins * 60;
+                return days * 24 * 60 * 60;
             }
             const seconds = Number.parseInt(preset, 10);
             return Number.isFinite(seconds) ? seconds : undefined;
@@ -245,7 +245,7 @@ let currentPublicKey = "";
             clearInputValue('inspectKeyArmored');
             clearInputValue('fpVerifyExpected');
             clearInputValue('addSubkeyPassphrase');
-            clearInputValue('genExpiryMinutes');
+            clearInputValue('genExpiryDays');
             const chkSub = document.getElementById('genSeparateEncSubkey');
             if (chkSub) {
                 chkSub.checked = false;
