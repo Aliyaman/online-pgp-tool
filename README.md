@@ -18,7 +18,7 @@ It is built using standard web technologies (HTML, CSS, JS) and relies on the of
 ## Security
 
 - **Client-Side Only:** Your private keys, passwords, and messages are processed locally in your browser. Nothing is ever transmitted to a backend server.
-- **Auto-Cleanup:** The tool automatically clears sensitive data (like generated keys and passwords) from memory after 10 minutes of inactivity to prevent accidental leaks on shared devices.
+- **Auto-Cleanup:** The tool automatically clears sensitive data (like generated keys and passwords) from memory after a configurable duration (defaulting to 10 minutes, can be changed or disabled via the top bar) to prevent accidental leaks on shared devices.
 - **No Persistent Storage:** Sensitive data is never saved to `localStorage` or `sessionStorage`.
 
 ## How to Use

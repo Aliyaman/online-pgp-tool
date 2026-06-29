@@ -22,6 +22,13 @@
             </svg>
         </a>
         <div class="top-controls">
+            <select id="autoClearSelect" class="auto-clear-select" onchange="changeAutoClearInterval()">
+                <option value="disabled">Auto-clean: Off</option>
+                <option value="1">Auto-clean: 1 min</option>
+                <option value="5">Auto-clean: 5 min</option>
+                <option value="10" selected>Auto-clean: 10 min</option>
+                <option value="30">Auto-clean: 30 min</option>
+            </select>
             <button id="clearSensitiveBtn" class="btn-danger" type="button"
                 onclick="clearSensitiveDataNow('clearSensitiveBtn')">Clear sensitive data</button>
             <button id="themeToggleBtn" class="theme-toggle" type="button" onclick="toggleTheme()">🌙</button>

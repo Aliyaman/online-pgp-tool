@@ -2,6 +2,7 @@ let currentPublicKey = "";
 let currentPrivateKey = "";
 let currentRevocationCertificate = "";
 let sensitiveDataTimer = null;
+let autoClearIntervalMinutes = 10;
 
 function normalizeFingerprintHex(s) {
     return String(s).replace(/[\s:]/g, '').toUpperCase();
@@ -316,11 +317,49 @@ function clearGeneratedKeysFromMemory() {
 function scheduleSensitiveDataCleanup() {
     if (sensitiveDataTimer) {
         clearTimeout(sensitiveDataTimer);
+        sensitiveDataTimer = null;
+    }
+    if (autoClearIntervalMinutes === 'disabled') {
+        return;
     }
     sensitiveDataTimer = setTimeout(() => {
         clearSensitiveInputs();
         clearGeneratedKeysFromMemory();
-    }, 10 * 60 * 1000);
+    }, autoClearIntervalMinutes * 60 * 1000);
+}
+
+function initializeAutoClear() {
+    const saved = localStorage.getItem('autoClearInterval');
+    const select = document.getElementById('autoClearSelect');
+    if (saved !== null) {
+        if (saved === 'disabled') {
+            autoClearIntervalMinutes = 'disabled';
+        } else {
+            const parsed = parseInt(saved, 10);
+            autoClearIntervalMinutes = isNaN(parsed) ? 10 : parsed;
+        }
+    }
+    if (select) {
+        select.value = String(autoClearIntervalMinutes);
+    }
+}
+
+function changeAutoClearInterval() {
+    const select = document.getElementById('autoClearSelect');
+    if (!select) return;
+    const value = select.value;
+    if (value === 'disabled') {
+        autoClearIntervalMinutes = 'disabled';
+        if (sensitiveDataTimer) {
+            clearTimeout(sensitiveDataTimer);
+            sensitiveDataTimer = null;
+        }
+    } else {
+        const parsed = parseInt(value, 10);
+        autoClearIntervalMinutes = isNaN(parsed) ? 10 : parsed;
+        scheduleSensitiveDataCleanup();
+    }
+    localStorage.setItem('autoClearInterval', value);
 }
 
 function clearSensitiveDataNow(buttonId = null) {
@@ -366,6 +405,7 @@ function toggleTheme() {
 
 window.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
+    initializeAutoClear();
     toggleGenAlgorithmOptions();
     toggleGenExpiryCustom();
     updateKeyMgmtVisibility();
